@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+	<definition name="/loginForm" extends="baseLayout">
+		<put-attribute name="title" value="로그인" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/loginForm.jsp" />
+	</definition>
+	<definition name="/joinForm" extends="baseLayout">
+		<put-attribute name="title" value="회원가입" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/joinForm.jsp" />
+	</definition>
+	
+	<definition name="/idF_Form" extends="baseLayout">
+		<put-attribute name="title" value="아이디 찾기" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/idF_Form.jsp"	/>
+	</definition>
+	
+	<definition name="/idF" extends="baseLayout">
+		<put-attribute name="title" value="아이디 찾기 검색 결과" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/idF.jsp"	/>
+	</definition>
+	
+	<definition name="/pwdF" extends="baseLayout">
+		<put-attribute name="title" value="비밀번호 찾기" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/pwdF.jsp" />
+	</definition>
+	
+	<definition name="/mypage/mypageMain" extends="baseLayout">
+		<put-attribute name="title" value="마이페이지" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/mypage/mypageMain.jsp" />
+	</definition>
+	
+	<definition name="/mypage/memberUpdateView" extends="baseLayout">
+		<put-attribute name="title" value="회원정보 수정" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/mypage/memberUpdateView.jsp" />
+	</definition>
+	
+	<definition name="/mypage/memberDeleteView" extends="baseLayout">
+		<put-attribute name="title" value="회원정보 탈퇴" />
+		<put-attribute name="body1" value="/WEB-INF/views/member/mypage/memberDeleteView.jsp" />
+	</definition>
+</tiles-definitions>
+
+

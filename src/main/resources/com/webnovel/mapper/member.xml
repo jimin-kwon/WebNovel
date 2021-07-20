@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.member">
+	<resultMap type="memberVO" id="memberResult">
+		<id property="id" column="id"/>
+		<result property="id" column="id"/>
+		<result property="password" column="password"/>
+		<result property="name" column="name"/>
+		<result property="gender" column="gender"/>
+		<result property="birthyy" column="birthyy"/>
+		<result property="birthmm" column="birthmm"/>
+		<result property="birthdd" column="birthdd"/>
+		<result property="mail1" column="mail1"/>
+		<result property="mail2" column="mail2"/>
+		<result property="phone" column="phone"/>
+		<result property="address" column="address"/>
+		<result property="enabled" column="enabled"/>
+		<result property="regDate" column="regDate"/>
+		<result property="updateDate" column="updateDate"/>
+		<collection property="authList" resultMap="authMap"></collection>
+	</resultMap>
+	
+	<resultMap type="authVO" id="authResult">
+		<result property="id" column="id"/>
+		<result property="auth" column="auth"/>
+	</resultMap>
+	
+	<insert id="join">
+		<![CDATA[
+	    	insert all
+	    	into w_member(id, password, name, gender, birthyy, birthmm, birthdd, mail1, mail2, phone, address)
+			values(#{id}, #{password}, #{name}, #{gender}, #{birthyy}, #{birthmm}, #{birthdd}, #{mail1}, #{mail2}, #{phone}, #{address})
+			into w_member_auth(id, auth)
+			values(#{id}, 'ROLE_MEMBER')
+			select * from dual
+		]]>
+	</insert>
+	
+	<!-- 아이디 중복 체크 -->
+	<select id="idCK" parameterType="String" resultType="String">
+		select
+		decode(count(*),1, 'true', 0, 'false')
+		from w_member
+		where id = #{id}
+	</select>
+	
+	<!-- 이메일 찾기 -->
+	<select id="findEmail" parameterType="memberVO" resultType="String">
+		select id
+		from w_member 
+		where mail1 = #{mail1} 
+		and mail2 = #{mail2}
+	</select>
+
+	<!-- 아이디 찾기 -->
+	<select id="idF" parameterType="Map" resultType="String">
+		select id from w_member where mail1 = #{mail1} and mail2 = #{mail2}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="pwdF" resultMap="memberResult">
+		select * from w_member
+		where id = #{id} 
+		and name = #{name} and mail1 = #{mail1} and #{mail2}
+	</select>
+	
+	<!-- 회원정보 조회 -->
+	<select id="memberInfo" parameterType="String" resultType="memberVO">
+		SELECT id, password, name, gender, birthyy, birthmm, birthdd, mail1, mail2, phone, address, regDate, updateDate
+		FROM w_member
+		WHERE id = #{id} 
+	</select>
+
+	<!-- 회원정보 수정 -->
+	<update id="memberUpdate">
+		update w_member
+		<set>
+			<if test=" password!='' and password!=null">
+				password=#{password},
+			</if>
+			<if test=" birthyy!='' and birthyy!=null">
+				birthyy=#{birthyy},
+			</if>
+			<if test=" birthmm!='' and birthmm!=null">
+				birthmm=#{birthmm},
+			</if>
+			<if test=" birthdd!='' and birthdd!=null">
+				birthdd=#{birthdd},
+			</if>
+			<if test=" mail1!='' and mail1!=null">
+				mail1=#{mail1},
+			</if>
+			<if test=" mail2!='' and mail2!=null">
+				mail2=#{mail2},
+			</if>
+			<if test=" phone!='' and phone!=null">
+				phone=#{phone},
+			</if>
+			<if test=" address!='' and address!=null">
+				address=#{address},
+			</if>
+			<if test=" updateDate='' and updateDate=null">
+				updateDate=sysdate,
+			</if>
+
+		</set>
+		where
+		id=#{id}
+	</update>
+
+	<!-- 회원탈퇴 -->
+	<delete id="memberDelete" parameterType="memberVO">
+		DELETE FROM w_member
+		WHERE id = #{id} 
+		<!-- AND password = #{password} -->
+	</delete>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="update_pwd" parameterType="String"> 
+		update member set 
+		password = #{password} where id = #{id} 
+	</update>
+	
+	<!-- 패스워드 체크 -->
+	<select id="passChk" resultType="int">
+		SELECT COUNT(*) FROM w_member
+		WHERE id = #{id}
+		AND password = #{password}
+	</select>
+	
+</mapper>

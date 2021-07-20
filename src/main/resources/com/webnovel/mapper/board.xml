@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.board">
+	<resultMap id="boardResult" type="boardVO">
+		<result property="articleNO" column="articleNO" />
+		<result property="parentNO" column="parentNO" />
+		<result property="title" column="title" />
+		<result property="genre" column="genre" />
+		<result property="content" column="content" />
+		<result property="id" column="id" />
+		<result property="writeDate" column="writeDate" />
+		<result property="modifyDate" column="modifyDate" />
+	</resultMap>
+	
+	<resultMap id="boardAttachResult" type="boardAttachVO">
+		<result property="uuid" column="uuid" />
+		<result property="uploadPath" column="uploadPath" />
+		<result property="fileName" column="fileName" />
+		<result property="fileType" column="fileType" />
+		<result property="articleNO" column="articleNO" />
+	</resultMap>
+
+	<!-- <resultMap id="imgResult" type="imageVO">
+		<result property="imageFileNO" column="imageFileNO" />
+		<result property="articleNO" column="articleNO" />
+		<result property="imageFileName" column="imageFileName" />
+	</resultMap> -->
+
+	<select id="selectBoardList" resultMap="boardResult">
+		<![CDATA[
+			SELECT articleNO, parentNO, title, genre, content, id, writeDate, modifyDate
+			from web_novel_board
+			where parentNO is null
+		]]>
+		<!-- START WITH parentNO=1 CONNECT BY PRIOR articleNO=parentNO ORDER SIBLINGS 
+			BY articleNO DESC -->
+	</select>
+	
+	<select id="selectGenreList" parameterType="String" resultMap="boardResult">
+		<![CDATA[
+			SELECT articleNO, parentNO, title, genre, content, id, writeDate, modifyDate
+			from web_novel_board
+			where genre = #{genre}
+			and parentNO is null
+		]]>
+	</select>
+	
+	<select id="selectArticleList" resultMap="boardResult">
+		<![CDATA[
+			SELECT *
+			from web_novel_board
+			where parentNO = #{articleNO}
+		]]>
+	</select>
+	
+	<select id="selectMyBoardList" parameterType="String" resultMap="boardResult">
+		SELECT articleNO, title, content, id
+		from web_novel_board
+		where id = #{id}
+		and parentNO is null
+		<!-- START WITH parentNO=1 CONNECT BY PRIOR articleNO=parentNO ORDER SIBLINGS 
+			BY articleNO DESC -->
+	</select>
+	
+	<insert id="insertSelectKey">
+		<selectKey keyProperty="articleNO" order="BEFORE"
+			resultType="Integer">
+			select seq_novel_board.nextval from dual
+		</selectKey>
+		insert into web_novel_board (articleNO, title, genre, content, id)
+		values (#{articleNO}, #{title}, #{genre}, #{content}, #{id})
+	</insert>
+	
+	
+	<!-- 첨부파일 -->
+	<insert id="insert">
+		insert into web_novel_attach (uuid, uploadPath, fileName,
+		fileType, articleNO)
+		values (#{uuid}, #{uploadPath}, #{fileName},
+		#{fileType}, #{articleNO} )
+	</insert>
+
+	<delete id="delete">
+		delete from web_novel_attach where uuid = #{uuid}
+	</delete>
+
+	<select id="findByArticleNO" resultMap="boardAttachResult">
+		select * from web_novel_attach where articleNO = #{articleNO}
+	</select>
+
+	<delete id="deleteAll">
+		delete web_novel_attach where articleNO = #{articleNO}
+	</delete>
+
+	<select id="getOldFiles" resultMap="boardAttachResult">
+		select * from web_novel_attach where uploadPath = to_char(sysdate -1 ,'yyyy\mm\dd')
+	</select>
+	
+	<!-- main -->
+	<select id="mainTopList" parameterType="String" resultMap="boardResult">
+		<![CDATA[
+			SELECT articleNO, parentNO, title, genre, content, id, writeDate, modifyDate
+			from web_novel_board
+			where genre = #{genre}
+			and rowNum <= 5
+			and parentNO is null
+		]]>
+	</select>
+</mapper>
